@@ -11,4 +11,35 @@ export class UsersService {
 
     return this.repo.save(user);
   }
+  findOne(id: number) {
+    return this.repo.findOneBy({ id });
+  }
+
+  find(email: string) {
+    return this.repo.find({ where: { email } });
+  }
+
+  async update(id: number, attrs: Partial<User>) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new Error(`User not found`);
+    }
+    //Thực hiện cơ chế Hook
+    Object.assign(user, attrs); //Tạo 1 instance gộp cả 2 thứ là user và attrs vào. attrs sẽ ghi đè vào user nếu có 2 properties giống nhau
+    return this.repo.save(user);
+  } //attrs: attributes
+  /*
+  e.g:
+  const target = { a: 1, b: 2 };
+  const source = { b: 4, c: 5 };
+  const returnedTarget = Object.assign(target, source);
+  console.log(returnedTarget); //Object { a: 1, b: 4, c: 5 }
+  */
+  async remove(id: number) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return this.repo.remove(user);
+  }
 }
