@@ -12,3 +12,6 @@ GET http://localhost:3000/auth/1
 
 ### Find all users with an given email
 GET http://localhost:3000/auth/?email=test@example.com
+
+### Delete an particular user with a given ID
+DELETE http://localhost:3000/auth/434343
