@@ -15,3 +15,14 @@ GET http://localhost:3000/auth/?email=test@example.com
 
 ### Delete an particular user with a given ID
 DELETE http://localhost:3000/auth/434343
+
+### Update an User
+PATCH http://localhost:3000/auth/2
+Content-Type: application/json
+
+{
+    "email": "tes1@example.com"
+}
+
+### Get all users in database
+GET http://localhost:3000/auth/

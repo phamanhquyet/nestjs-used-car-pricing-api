@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
@@ -22,7 +22,7 @@ export class UsersService {
   async update(id: number, attrs: Partial<User>) {
     const user = await this.findOne(id);
     if (!user) {
-      throw new Error(`User not found`);
+      throw new NotFoundException(`User not found`);
     }
     //Thực hiện cơ chế Hook
     Object.assign(user, attrs); //Tạo 1 instance gộp cả 2 thứ là user và attrs vào. attrs sẽ ghi đè vào user nếu có 2 properties giống nhau
@@ -38,8 +38,12 @@ export class UsersService {
   async remove(id: number) {
     const user = await this.findOne(id);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
     return this.repo.remove(user);
+  }
+
+  getAll() {
+    return this.repo.find();
   }
 }
