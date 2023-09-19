@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   NotFoundException,
+  Session,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -23,13 +24,30 @@ export class UsersController {
     private authService: AuthService,
   ) {}
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    return this.authService.signup(body.email, body.password);
+  async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signup(body.email, body.password);
+    session.userId = user.id;
+    //Sau khi chạy xong, userId sẽ được gắn vào session object
+    return user;
   }
 
   @Post('/signin')
-  signin(@Body() body: CreateUserDto) {
-    return this.authService.signin(body.email, body.password);
+  async signin(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signin(body.email, body.password);
+    session.userId = user.id;
+    return user;
+  }
+
+  @Get('/whoami')
+  whoami(@Session() session: any) {
+    return this.usersService.findOne(session.userId);
+    //Với hàm fineOne, khi truyền vào một tham số là null thì nó sẽ trả ra kết quả là bản ghi đầu tiên trong db
+    //Vì vậy, cần phải xử lý trong hàm findOne, nếu id truyền vào là null thì dừng lại.
+  }
+
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
   }
 
   @Get('/:id')
@@ -54,10 +72,5 @@ export class UsersController {
   @Patch(':id')
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.usersService.update(parseInt(id), body);
-  }
-
-  @Get()
-  getAllUsers() {
-    return this.usersService.getAll();
   }
 }
