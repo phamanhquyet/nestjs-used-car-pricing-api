@@ -40,16 +40,21 @@ export class AuthService {
   }
 
   async signin(email: string, password: string) {
+    // Tìm kiếm người dùng trong cơ sở dữ liệu dựa trên địa chỉ email
     const [user] = await this.usersService.find(email);
+    // Nếu không tìm thấy người dùng, ném ra một ngoại lệ NotFoundException
     if (!user) {
       throw new NotFoundException('User not found');
     }
+    // Phân tách chuỗi password lấy ra salt và storedHash từ người dùng
     const [salt, storedHash] = user.password.split('.');
+    // Sử dụng salt để hash password đầu vào
     const hash = (await scrypt(password, salt, 32)) as Buffer;
-
+    // So sánh storedHash và hash đã tạo, nếu không khớp, ném ra ngoại lệ BadRequestException
     if (storedHash !== hash.toString('hex')) {
       throw new BadRequestException('bad password');
     }
+    // Trả về thông tin người dùng nếu mọi thứ hợp lệ
     return user;
   }
 }
