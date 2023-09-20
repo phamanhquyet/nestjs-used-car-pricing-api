@@ -23,4 +23,4 @@ import { Report } from './reports/report.entity';
   controllers: [AppController], // Các controllers chính của ứng dụng
   providers: [AppService], // Các providers chính của ứng dụng
 })
-export class AppModule {}
+export class AppModule {} // AppModule đại diện cho module chính của ứng dụng
